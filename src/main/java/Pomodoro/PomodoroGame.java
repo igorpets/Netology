@@ -20,6 +20,8 @@ public class PomodoroGame {
     private int workTime = 25;
     // Время отдыха, в минутах.
     private int breakTime = 5;
+    // Множитель времени работы.
+    private int multi = 1;
     // Число циклов работа-отдых.
     private int pomodoroCount = 2;
     // Точка входа в приложение.
@@ -37,7 +39,8 @@ public class PomodoroGame {
         if (worked && (pomodoroCount > 0))
             System.out.printf("Параметры: время работы : " + workTime +
                         " мин, время отдыха : " + breakTime +
-                        " мин, помидоров: " + pomodoroCount + "\n");
+                        " мин, множитель времени работы : " + multi +
+                        ", помидоров: " + pomodoroCount + "\n");
         // Основной цикл работа-отдых.
         pomodoro_loop();
         // Завершаем программу.
@@ -52,12 +55,13 @@ public class PomodoroGame {
             if (pomodoroCount > 1)
                 printProgress("Отдых  : ", breakTime, 60);
             pomodoroCount--;
+            workTime *= multi;
         }
     }
 
     // Разбираем массив параметров программы.
     private void read_line_options(String[] userInput) {
-        for (int i = 0; i < userInput.length; i++) {
+        for (int i = 0; i < userInput.length && worked; i++) {
             String msg = userInput[i];
             if (msg != "") {
                 //System.out.println("Команда:" + msg);
@@ -67,6 +71,7 @@ public class PomodoroGame {
                                 Pomodoro - это приложение для тренировки и повышения личной эффективности.
                                 -w <минуты> - время работы,
                                 -b <минуты> - время отдыха,
+                                -m <множитель> - на каждом новом цикле время работы увеличивается,
                                 -c <количество> - циклы работа-отдых, 
                                 -x - выход из программы,
                                 --help - показать подсказку.\n""");
@@ -79,6 +84,10 @@ public class PomodoroGame {
                     case "-b":
                         if (i < userInput.length - 1)
                             breakTime = Integer.parseInt(userInput[++i]);
+                        break;
+                    case "-m":
+                        if (i < userInput.length - 1)
+                            multi = Integer.parseInt(userInput[++i]);
                         break;
                     case "-c":
                         if (i < userInput.length - 1)
