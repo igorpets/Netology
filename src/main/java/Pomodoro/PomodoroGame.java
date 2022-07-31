@@ -27,26 +27,30 @@ public class PomodoroGame {
         PomodoroGame pg = new PomodoroGame();
         pg.init();
     }
-    // Основная инициализация и главный цикл приложения.
+
+    // Инициализация приложения и чтение параметров.
     public void init() throws InterruptedException {
         System.out.println("Добро пожаловать в Помидоро!");
         System.out.println("Введите желаемое время работы, отдыха и количество помидоров (--help):");
         String[] userInput = new Scanner(System.in).nextLine().split(" ");
         read_line_options(userInput);
         if (worked && (pomodoroCount > 0))
-            System.out.printf("Время работы : " + workTime +
-                        ", время отдыха : " + breakTime +
-                        ", помидоров: " + pomodoroCount + "\n");
+            System.out.printf("Параметры: время работы : " + workTime +
+                        " мин, время отдыха : " + breakTime +
+                        " мин, помидоров: " + pomodoroCount + "\n");
         // Основной цикл работа-отдых.
         pomodoro_loop();
         // Завершаем программу.
         System.out.println("Работа завершена!");
     }
 
+    // Главный цикл приложения работа-отдых.
     private void pomodoro_loop() throws InterruptedException {
         while (worked && (pomodoroCount > 0)) {
-            printProgress("Время работы : ", workTime, 60);
-            printProgress("Время отдыха : ", breakTime, 60);
+            printProgress("Работа : ", workTime,  60);
+            // Отдых имеет смысл только если за ним будет еще одна работа (то есть не последний цикл).
+            if (pomodoroCount > 1)
+                printProgress("Отдых  : ", breakTime, 60);
             pomodoroCount--;
         }
     }
@@ -61,11 +65,11 @@ public class PomodoroGame {
                     case "--help":
                         System.out.println("""
                                 Pomodoro - это приложение для тренировки и повышения личной эффективности.
-                                -w <минуты> - время работы в минутах,
-                                -b <минуты> - время отдыха в минутах (должно быть меньше времени работы),
-                                -c <количество> - количество циклов работа-отдых, 
+                                -w <минуты> - время работы,
+                                -b <минуты> - время отдыха,
+                                -c <количество> - циклы работа-отдых, 
                                 -x - выход из программы,
-                                --help - показать подсказку по программе.\n""");
+                                --help - показать подсказку.\n""");
                         worked = false;
                         break;
                     case "-w":
@@ -88,37 +92,38 @@ public class PomodoroGame {
         }
     }
 
+    // Отображение прогресбара с ожиданием завершения текущей работы или отдыха.
     // String process - отображаемое название прогресбара,
-    // time - время ожидания таймера в секундах,
-    // size - размер прогресбара на экране в символах (кратное времени ожидания),
-    // InterruptedException - необходимо для обработки TimeUnit.SECONDS.sleep (заменить?).
+    // time - время ожидания таймера в минутах,
+    // size - размер прогресбара на экране в символах,
+    // InterruptedException - необходимо для Thread.sleep.
     private void printProgress(String process, int time, int size) throws InterruptedException {
-        // Количество секунд в одном символе прогресбара.
-        int length = 60* time / size;
-        // Реальная длина прогрессбара в символах.
-        int rep = 60* time /length;
+        // время в секундах
+        int time_sec = time * 60;
 
-        int stretch_b = size /(3* time);
-        for(int i=1; i <= rep; i++){
-            // Текущий размер заполненной полосы прогрессбара.
-            double x = i;
-            x = 1.0/3.0 *x;
-            x *= 10;
-            x = Math.round(x);
-            x /= 10;
-            double w = time * stretch_b;
-            double percent = (x / w) * 1000;
-            x /= stretch_b;
-            x *= 10;
-            x = Math.round(x);
-            x /= 10;
-            percent = Math.round(percent);
-            percent /= 10;
-            System.out.print(process + percent + "% " + (" ").repeat(
-                    5 - (String.valueOf(percent).length())) +
-                    "[" + ("#").repeat(i) + ("-").repeat(rep - i)+
-                    "]    ( " + x +"min / " + time +"min )"+  "\r");
-            Thread.sleep(length*1000);
+        // Текущее пройденное время этапа (работа/отдых).
+        float curr_tm = 0.0f;
+        while (curr_tm < time_sec) {
+            // Выполняем паузу в приложении на 100мс.
+            Thread.sleep(100);
+            // увеличиваем счетчик на 100мс.
+            curr_tm = curr_tm + 0.1f;
+            if (curr_tm > time_sec) curr_tm = time_sec;
+            // Отображаемое время этапа в формате
+            float look_tm = Math.round(curr_tm*10)/10;
+            // Вычисляем процент и сразу приводим к формату ХХ.Х%
+            double percent = Math.floor(curr_tm/(float)time_sec*1000.0f)/10.0f;
+            // Число закрашенных символово прогресбара #
+            int sym = Math.round((float)size * curr_tm / (float)time_sec);
+            // Пройденное время в формате ХХ.X мин.
+            double time_go = Math.floor((float)time * curr_tm * 10.0f / (float) time_sec) / 10.0f;
+            // System.out.println("look="+look_tm+" curr="+curr_tm + " sym="+sym); // Тестовая печать.
+            // Готовим строку - заголовок прогресбара.
+            String head_str = process + percent + "% " +
+                    (" ").repeat(5 - (String.valueOf(percent).length()));
+            // Отображаем всю строку прогрессбара поверх старой строки.
+            System.out.print(head_str + "[" + ("#").repeat(sym) + ("-").repeat(size - sym)+
+                    "]    ( " + time_go +"мин / " + time +"мин)"+  "\r");
         }
         System.out.println();
     }
