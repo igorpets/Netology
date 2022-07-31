@@ -80,6 +80,8 @@ do
     esac
 done
 
+#GRADLE_OPTS = " --warning-mode fail "
+
 APP_HOME=$( cd "${APP_HOME:-./}" && pwd -P ) || exit
 
 APP_NAME="Gradle"
@@ -204,6 +206,12 @@ set -- \
         -classpath "$CLASSPATH" \
         org.gradle.wrapper.GradleWrapperMain \
         "$@"
+
+# Stop when "xargs" is not available.
+if ! command -v xargs >/dev/null 2>&1
+then
+    die "xargs is not available"
+fi
 
 # Use "xargs" to parse quoted args.
 #
