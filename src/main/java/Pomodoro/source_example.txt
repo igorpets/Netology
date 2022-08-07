@@ -99,30 +99,4 @@ public class Main {
             }
         }
     }
-
-    static class EchoBot extends TelegramLongPollingBot {
-
-        @Override
-        public String getBotUsername() {
-            return "Echo bot";
-        }
-
-        @Override
-        public String getBotToken() {
-            return YOUR_TOKEN;
-        }
-
-        @Override
-        public void onUpdateReceived(Update update) {
-            if (update.hasMessage() && update.getMessage().hasText()) {
-                SendMessage msg = new SendMessage(update.getMessage().getChatId().toString(),
-                        update.getMessage().getText());
-                try {
-                    execute(msg);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 }

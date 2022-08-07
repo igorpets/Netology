@@ -13,11 +13,15 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import static java.lang.System.out;
+
 public class EchoTelegramBot extends TelegramLongPollingBot {
+
+    public static final String BOT_NAME = "MyPomodoro77Bot";
 
     @Override
     public String getBotUsername() {
-        return "MyPomodoro77Bot";
+        return BOT_NAME;
     }
 
     @Override
@@ -26,10 +30,18 @@ public class EchoTelegramBot extends TelegramLongPollingBot {
         return "5433494058:AAGqZTo9RbOlbwPioSlIBjXOBPXp9TLgLUg";
     }
 
+    /**
+     * Is called when bot gets registered
+     */
+    @Override
+    public void onRegister() {
+        out.println("Телеграм-бот " + BOT_NAME + " зарегистрирован!");
+        super.onRegister();
+    }
+
     // При каждом событии (сообщении, подключении и т.д.) в чат-боте нам придет вызов с объектом update.
     @Override
     public void onUpdateReceived(Update update) {
-        System.out.println("= "+update.toString());
         if (update.hasMessage()) {
             // Выделяем объект-сообщение от пользователя.
             Message in_msg = update.getMessage();
