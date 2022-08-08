@@ -1,4 +1,6 @@
 plugins {
+    id("org.springframework.boot") version "2.7.2"
+    id("io.spring.dependency-management") version "1.0.12.RELEASE"
     id("java")
 }
 
@@ -10,7 +12,8 @@ repositories {
 }
 
 dependencies {
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.14.1")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("org.telegram:telegrambots:6.1.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
@@ -18,5 +21,5 @@ dependencies {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
-    testLogging.showStackTraces = false
 }
+

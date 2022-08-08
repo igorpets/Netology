@@ -4,4 +4,6 @@
 # Ignore Gradle build output directory
 /build/
 /docs/
+/lib/
+*.jar
 *.class
