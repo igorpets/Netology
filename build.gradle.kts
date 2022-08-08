@@ -12,6 +12,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.springframework.data:spring-data-mongodb:2.0.5.RELEASE")
     implementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("org.telegram:telegrambots:6.1.0")
